@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Кинопоиск 2.0{% endblock %}</title>
+
+    <!-- Шрифты как в Kinopoisk: Yandex Sans Display / Inter fallback -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome для иконок (заменил эмодзи) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- GSAP для анимаций -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- Particles.js для кино-атмосферы -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+
+    <!-- Стили -->
+    <link rel="stylesheet" href="{% load static %}{% static 'css/base.css' %}">
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <!-- Particles canvas для фона -->
+    <div id="particles-js"></div>
+
+    <header class="header">
+        <div class="container">
+            <a href="{% url 'home' %}" class="logo">
+                <i class="fas fa-clapperboard"></i> КИНО<span>ПОИСК</span>
+            </a>
+            <form method="get" action="{% url 'home' %}" class="search-form">
+                <input type="text" name="q" placeholder="Фильмы, сериалы, актёры..." value="{{ request.GET.q|default:'' }}">
+                <button type="submit" class="search-btn"><i class="fas fa-magnifying-glass"></i></button>
+            </form>
+            <div class="header-actions">
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Кинопоиск Clone — Дизайн как у настоящего, но лучше</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/base.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

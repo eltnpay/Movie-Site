@@ -1,0 +1,78 @@
+{% extends "client/base.html" %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="detail-hero fade-in-up">
+        <div class="detail-poster">
+            <img src="{{ movie.image.url }}" alt="{{ movie.title }}" loading="lazy">
+            <div class="play-overlay"><i class="fas fa-play"></i></div>
+        </div>
+
+        <div class="detail-content">
+            <h1 class="detail-title">{{ movie.title }}</h1>
+
+            <div class="detail-meta">
+                <div class="meta-chip"><i class="fas fa-calendar-alt"></i> {{ movie.year }}</div>
+                <div class="meta-chip"><i class="fas fa-clock"></i> {{ movie.time }} мин</div>
+                <div class="meta-chip"><i class="fas fa-users"></i> {{ movie.age }}+ </div>
+            </div>
+
+            <p class="detail-description">{{ movie.description }}</p>
+
+            <div class="detail-sections">
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-globe"></i> Страны</h2>
+                    <div class="section-content">
+                        {% for c in movie.countries.all %}
+                            <span class="tag">{{ c.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-tags"></i> Жанры</h2>
+                    <div class="section-content">
+                        {% for g in movie.genres.all %}
+                            <span class="tag">{{ g.genre }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-star"></i> Актёры</h2>
+                    <div class="section-content actors-grid">
+                        {% for a in movie.actors.all %}
+                            <div class="actor-item">
+                                <div class="skeleton" style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto;"></div>
+                                <div class="actor-name">{{ a.full_name }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="trailer-section">
+                <a href="{{ movie.trailer }}" target="_blank" class="trailer-link">
+                    <i class="fab fa-youtube"></i> Смотреть трейлер
+                </a>
+            </div>
+
+            <div class="video-player">
+                <video controls poster="{{ movie.image.url }}" preload="metadata">
+                    <source src="{{ movie.film.url }}" type="video/mp4">
+                    Видео недоступно в вашем браузере.
+                </video>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/detail.js' %}"></script>
+{% endblock %}

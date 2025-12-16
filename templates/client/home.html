@@ -1,0 +1,137 @@
+{% extends "client/base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="movies-section fade-in-up">
+        <h1 class="section-title">Фильмы</h1>
+
+        {% if page_obj %}
+            <div class="movies-grid">
+                {% for i in page_obj %}
+                    <a href="{% url 'movie_detail' i.slug %}" class="movie-card card fade-in-up">
+                        <img class="movie-poster" data-src="{{ i.image.url }}" alt="{{ i.title }}" loading="lazy">
+                        <div class="movie-overlay">
+                            <h2 class="movie-title">{{ i.title }}</h2>
+                            <div class="movie-year">{{ i.year }}</div>
+                            <div class="movie-genres">
+                                {% for g in i.genres.all %}
+                                    <span class="genre-tag">{{ g.genre }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+
+
+
+<!-- Стили для пагинации -->
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin: 40px 0;
+        flex-wrap: wrap;
+    }
+
+    .pagination a,
+    .pagination span {
+        min-width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .pagination a:hover {
+        background-color: #f0f0f0;
+        border-color: #999;
+        transform: translateY(-1px);
+    }
+
+    .pagination span.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+        cursor: default;
+    }
+
+    /* Стрелки */
+    .pagination a:first-child,
+    .pagination a:last-child {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .pagination {
+            gap: 6px;
+            margin: 30px 0;
+        }
+        
+        .pagination a,
+        .pagination span {
+            min-width: 36px;
+            height: 36px;
+            font-size: 13px;
+        }
+    }
+</style>
+
+<!-- Пагинация -->
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?q={{ search_query }}&page={{ page_obj.previous_page_number }}">←</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if num == page_obj.number %}
+            <span class="active">{{ num }}</span>
+        {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+            <a href="?q={{ search_query }}&page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?q={{ search_query }}&page={{ page_obj.next_page_number }}">→</a>
+    {% endif %}
+</div>
+
+            
+
+        {% else %}
+            <div class="no-results">
+                <i class="fas fa-video-slash"></i>
+                <h3>Ничего не найдено</h3>
+                <p>Попробуйте другой запрос</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
