@@ -3,12 +3,353 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+    .search-section {
+        margin-bottom: 30px;
+    }
+    
+    .search-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .search-bar input {
+        flex: 1;
+        padding: 12px 20px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+    
+    .search-bar input:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+    
+    .btn-filter {
+        padding: 12px 30px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-filter:hover {
+        background-color: #0056b3;
+    }
+    
+    .btn-search {
+        padding: 12px 30px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-search:hover {
+        background-color: #218838;
+    }
+    
+    /* Модальное окно фильтров */
+    .filter-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        animation: fadeIn 0.3s;
+    }
+    
+    .filter-modal.active {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .filter-content {
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        animation: slideUp 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eee;
+    }
+    
+    .filter-header h2 {
+        margin: 0;
+        color: #333;
+    }
+    
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #999;
+        line-height: 1;
+        transition: color 0.3s;
+    }
+    
+    .close-btn:hover {
+        color: #333;
+    }
+    
+    .filter-group {
+        margin-bottom: 25px;
+    }
+    
+    .filter-group h3 {
+        margin-bottom: 12px;
+        color: #555;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
+        border: 2px solid #ddd;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        user-select: none;
+        background-color: white;
+    }
+    
+    .checkbox-label:hover {
+        border-color: #007bff;
+        background-color: #f0f8ff;
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+        margin-right: 8px;
+        cursor: pointer;
+        width: 16px;
+        height: 16px;
+    }
+    
+    .checkbox-label span {
+        color: #333;
+        font-size: 14px;
+    }
+    
+    .checkbox-label:has(input:checked) {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    
+    .checkbox-label:has(input:checked) span {
+        color: white;
+        font-weight: 600;
+    }
+    
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+    
+    select:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+    
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 2px solid #eee;
+    }
+    
+    .btn-apply {
+        flex: 1;
+        padding: 12px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-apply:hover {
+        background-color: #218838;
+    }
+    
+    .btn-reset {
+        padding: 12px 20px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-reset:hover {
+        background-color: #c82333;
+    }
+    
+    .active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+    
+    .filter-tag button {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        padding: 0;
+    }
+    
+    .results-info {
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+    
+    @media (max-width: 768px) {
+        .filter-content {
+            padding: 20px;
+            width: 95%;
+        }
+        
+        .search-bar {
+            flex-direction: column;
+        }
+        
+        .checkbox-group {
+            flex-direction: column;
+        }
+        
+        .filter-actions {
+            flex-direction: column;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="movies-section fade-in-up">
         <h1 class="section-title">Фильмы</h1>
+        
+        <!-- Поисковая строка и кнопка фильтров -->
+        <div class="search-section">
+            <form method="get" action="{% url 'home' %}">
+                <div class="search-bar">
+                    <input type="text" name="q" placeholder="Поиск фильмов..." value="{{ search_query }}">
+                    <button type="button" class="btn-filter" onclick="openFilterModal()">
+                        <i class="fas fa-filter"></i>
+                        Фильтры
+                    </button>
+                    <button type="submit" class="btn-search">
+                        <i class="fas fa-search"></i> Найти
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Активные фильтры -->
+            {% if selected_genres or selected_countries or selected_year %}
+            <div class="active-filters">
+                {% for genre in all_genres %}
+                    {% if genre.id in selected_genres %}
+                    <span class="filter-tag">
+                        {{ genre.genre }}
+                        <button onclick="removeFilter('genre', {{ genre.id }})" aria-label="Удалить">×</button>
+                    </span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% for country in all_countries %}
+                    {% if country.id in selected_countries %}
+                    <span class="filter-tag">
+                        {{ country.name }}
+                        <button onclick="removeFilter('country', {{ country.id }})" aria-label="Удалить">×</button>
+                    </span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if selected_year %}
+                <span class="filter-tag">
+                    {{ selected_year }}
+                    <button onclick="removeFilter('year', '')" aria-label="Удалить">×</button>
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Информация о результатах -->
+            <div class="results-info">
+                Найдено фильмов: {{ page_obj.paginator.count }}
+            </div>
+        </div>
 
         {% if page_obj %}
             <div class="movies-grid">
@@ -28,110 +369,198 @@
                 {% endfor %}
             </div>
 
+            <!-- Пагинация -->
+            <style>
+                .pagination {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 8px;
+                    margin: 40px 0;
+                    flex-wrap: wrap;
+                }
+                .pagination a, .pagination span {
+                    min-width: 40px;
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-decoration: none;
+                    color: #333;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    transition: all 0.2s ease;
+                }
+                .pagination a:hover {
+                    background-color: #f0f0f0;
+                    border-color: #999;
+                    transform: translateY(-1px);
+                }
+                .pagination span.active {
+                    background-color: #007bff;
+                    color: white;
+                    border-color: #007bff;
+                    cursor: default;
+                }
+            </style>
 
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?{{ request.GET.urlencode }}&page={{ page_obj.previous_page_number }}">←</a>
+                {% endif %}
 
-<!-- Стили для пагинации -->
-<style>
-    .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
-        margin: 40px 0;
-        flex-wrap: wrap;
-    }
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <span class="active">{{ num }}</span>
+                    {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                        <a href="?{{ request.GET.urlencode }}&page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
 
-    .pagination a,
-    .pagination span {
-        min-width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        color: #333;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-
-    .pagination a:hover {
-        background-color: #f0f0f0;
-        border-color: #999;
-        transform: translateY(-1px);
-    }
-
-    .pagination span.active {
-        background-color: #007bff;
-        color: white;
-        border-color: #007bff;
-        cursor: default;
-    }
-
-    /* Стрелки */
-    .pagination a:first-child,
-    .pagination a:last-child {
-        font-size: 18px;
-        font-weight: bold;
-    }
-
-    /* Адаптивность */
-    @media (max-width: 768px) {
-        .pagination {
-            gap: 6px;
-            margin: 30px 0;
-        }
-        
-        .pagination a,
-        .pagination span {
-            min-width: 36px;
-            height: 36px;
-            font-size: 13px;
-        }
-    }
-</style>
-
-<!-- Пагинация -->
-<div class="pagination">
-    {% if page_obj.has_previous %}
-        <a href="?q={{ search_query }}&page={{ page_obj.previous_page_number }}">←</a>
-    {% endif %}
-
-    {% for num in page_obj.paginator.page_range %}
-        {% if num == page_obj.number %}
-            <span class="active">{{ num }}</span>
-        {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
-            <a href="?q={{ search_query }}&page={{ num }}">{{ num }}</a>
-        {% endif %}
-    {% endfor %}
-
-    {% if page_obj.has_next %}
-        <a href="?q={{ search_query }}&page={{ page_obj.next_page_number }}">→</a>
-    {% endif %}
-</div>
-
-            
-
+                {% if page_obj.has_next %}
+                    <a href="?{{ request.GET.urlencode }}&page={{ page_obj.next_page_number }}">→</a>
+                {% endif %}
+            </div>
         {% else %}
             <div class="no-results">
                 <i class="fas fa-video-slash"></i>
                 <h3>Ничего не найдено</h3>
-                <p>Попробуйте другой запрос</p>
+                <p>Попробуйте другой запрос или измените фильтры</p>
             </div>
         {% endif %}
     </div>
 </div>
+
+<!-- Модальное окно фильтров -->
+<div id="filterModal" class="filter-modal">
+    <div class="filter-content">
+        <div class="filter-header">
+            <h2>Фильтры поиска</h2>
+            <button class="close-btn" onclick="closeFilterModal()">&times;</button>
+        </div>
+        
+        <form id="filterForm" method="get" action="{% url 'home' %}">
+            <input type="hidden" name="q" value="{{ search_query }}">
+            
+            <!-- Жанры -->
+            <div class="filter-group">
+                <h3>Жанры</h3>
+                <div class="checkbox-group">
+                    {% for genre in all_genres %}
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="genre" value="{{ genre.id }}" 
+                               {% if genre.id in selected_genres %}checked{% endif %}>
+                        <span>{{ genre.genre }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Страны -->
+            <div class="filter-group">
+                <h3>Страны</h3>
+                <div class="checkbox-group">
+                    {% for country in all_countries %}
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="country" value="{{ country.id }}"
+                               {% if country.id in selected_countries %}checked{% endif %}>
+                        <span>{{ country.name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Год выпуска -->
+            <div class="filter-group">
+                <h3>Год выпуска</h3>
+                <select name="year">
+                    <option value="">Все годы</option>
+                    {% for year in years %}
+                    <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>
+                        {{ year }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Сортировка -->
+            <div class="filter-group">
+                <h3>Сортировка</h3>
+                <select name="sort">
+                    <option value="">По умолчанию</option>
+                    <option value="year_desc" {% if sort_by == 'year_desc' %}selected{% endif %}>
+                        Сначала новые
+                    </option>
+                    <option value="year_asc" {% if sort_by == 'year_asc' %}selected{% endif %}>
+                        Сначала старые
+                    </option>
+                    <option value="title" {% if sort_by == 'title' %}selected{% endif %}>
+                        По алфавиту
+                    </option>
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn-apply">Применить фильтры</button>
+                <button type="button" class="btn-reset" onclick="resetFilters()">Сбросить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openFilterModal() {
+        document.getElementById('filterModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeFilterModal() {
+        document.getElementById('filterModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // Закрытие по клику вне модального окна
+    document.getElementById('filterModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeFilterModal();
+        }
+    });
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeFilterModal();
+        }
+    });
+    
+    function resetFilters() {
+        window.location.href = '{% url "home" %}';
+    }
+    
+    function removeFilter(type, value) {
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+        
+        if (type === 'genre' || type === 'country') {
+            const values = params.getAll(type);
+            params.delete(type);
+            values.forEach(v => {
+                if (v != value) {
+                    params.append(type, v);
+                }
+            });
+        } else if (type === 'year') {
+            params.delete('year');
+        }
+        
+        params.delete('page'); // Сбрасываем страницу
+        window.location.href = url.pathname + '?' + params.toString();
+    }
+</script>
 {% endblock %}
 
 {% block scripts %}
 <script src="{% static 'js/home.js' %}"></script>
 {% endblock %}
-
-
-
-
-
-
-

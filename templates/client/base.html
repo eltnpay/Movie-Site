@@ -27,10 +27,6 @@
             <a href="{% url 'home' %}" class="logo">
                 <i class="fas fa-clapperboard"></i> КИНО<span>ПОИСК</span>
             </a>
-            <form method="get" action="{% url 'home' %}" class="search-form">
-                <input type="text" name="q" placeholder="Фильмы, сериалы, актёры..." value="{{ request.GET.q|default:'' }}">
-                <button type="submit" class="search-btn"><i class="fas fa-magnifying-glass"></i></button>
-            </form>
             <div class="header-actions">
                 <i class="fas fa-user-circle"></i>
             </div>
