@@ -1,0 +1,61 @@
+{% extends 'client/base.html' %}
+{% load static %}
+
+{% block title %}Вход{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-wrapper">
+        <div class="login-header">
+            <h1>ВХОД</h1>
+            <p>Добро пожаловать обратно</p>
+        </div>
+
+        <div class="login-box">
+            {% if form.non_field_errors %}
+                <div class="error-message">
+                    <i class="error-icon">⚠</i>
+                    {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_username">Имя пользователя</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <span class="field-error">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password">Пароль</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <span class="field-error">{{ form.password.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">Войти</span>
+                    <span class="btn-icon">→</span>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>Нет аккаунта? <a href="/reg/">Зарегистрироваться</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/login.js' %}"></script>
+{% endblock %}

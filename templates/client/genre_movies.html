@@ -1,0 +1,84 @@
+{% extends 'client/base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/genre_movies.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="movies-section fade-in-up">
+        <!-- Заголовок с названием жанра -->
+        <div class="page-header">
+            <h1 class="section-title">Фильмы жанра: <span class="genre-name">{{ genre.genre }}</span></h1>
+            <div class="results-info">
+                Найдено фильмов: <span id="moviesCount">{{ movies|length }}</span>
+            </div>
+        </div>
+
+        {% if movies %}
+            <!-- Сетка фильмов -->
+            <div class="movies-grid">
+                {% for movie in movies %}
+                    <a href="{% url 'movie_detail' slug=movie.slug %}" class="movie-card card fade-in-up" data-movie-id="{{ movie.id }}">
+                        <img class="movie-poster" data-src="{{ movie.image.url }}" alt="{{ movie.title }}" loading="lazy">
+                        <div class="movie-overlay">
+                            <div class="overlay-content">
+                                <span class="watch-icon">▶</span>
+                            </div>
+                            <h2 class="movie-title">{{ movie.title }}</h2>
+                            <div class="movie-meta">
+                                <span class="movie-year">{{ movie.year }}</span>
+                                {% if movie.age %}
+                                    <span class="movie-age">{{ movie.age }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="movie-genres">
+                                {% for g in movie.genres.all %}
+                                    <span class="genre-tag">{{ g.genre }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+
+            <!-- Навигация назад -->
+            <div class="back-navigation">
+                <a href="javascript:history.back()" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Назад</span>
+                </a>
+                <a href="{% url 'home' %}" class="btn-home">
+                    <i class="fas fa-home"></i>
+                    <span>На главную</span>
+                </a>
+            </div>
+        {% else %}
+            <!-- Пустое состояние -->
+            <div class="no-results">
+                <div class="empty-icon">🎬</div>
+                <h3>В этом жанре пока нет фильмов</h3>
+                <p>Попробуйте выбрать другой жанр или вернитесь на главную страницу</p>
+                <div class="empty-actions">
+                    <a href="javascript:history.back()" class="btn-back-empty">
+                        <i class="fas fa-arrow-left"></i> Назад
+                    </a>
+                    <a href="{% url 'home' %}" class="btn-home-empty">
+                        <i class="fas fa-home"></i> На главную
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Кнопка "Наверх" -->
+<button id="scrollToTop" class="scroll-to-top" aria-label="Наверх">
+    <i class="fas fa-arrow-up"></i>
+</button>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/genre_movies.js' %}"></script>
+{% endblock %}

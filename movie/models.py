@@ -97,7 +97,19 @@ class Movie(models.Model):
     class Meta:
         verbose_name = 'Фильм'
         verbose_name_plural = 'Фильмы'
-    
+
+class Comments(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='comments')
+    news = models.ForeignKey(Movie,on_delete=models.CASCADE,related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.text[:50]
+
+    class Meta:
+        ordering = ['-created_at']
+
 
 class Serial(models.Model):
     title = models.CharField(max_length=250, verbose_name='Название сериала')

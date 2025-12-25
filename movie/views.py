@@ -3,8 +3,16 @@ from .models import Movie
 from django.db.models import Q
 from django.db.models.functions import Lower, Concat
 from django.core.paginator import Paginator
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
 from .models import Movie, Genres, Countries, Actors
+from .forms import RegistrationForm, LoginForm
+from django.contrib.auth import login,logout
+from django.contrib.auth import get_user_model
+from .forms import ReviewForm
 
+
+User = get_user_model()
 
 def homepage(request):
     search_query = request.GET.get('q', '').strip()
@@ -81,11 +89,74 @@ def homepage(request):
 
 def movie_detail(request, slug):
     movie = get_object_or_404(Movie, slug=slug)
-    return render(request, 'client/detail.html', {'movie': movie})
+    comments = movie.comments.select_related('user')
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.news = movie
+            comment.save()
+            return redirect('movie_detail', slug=slug)
+    else:
+        form = ReviewForm()
+
+    return render(request, 'client/detail.html', {
+        'movie': movie,
+        'comments': comments,
+        'form': form
+    })
 
 def actor_detail(request, slug):
     actor = get_object_or_404(Actors, slug=slug)
     return render(request, 'client/actor_detail.html', {'actor': actor})
+
+
+def movies_by_genre(request, slug):
+    genre = get_object_or_404(Genres, slug=slug)
+    movies = Movie.objects.filter(genres=genre)
+    
+    context = {
+        'genre': genre,
+        'movies': movies,
+    }
+    return render(request, 'client/genre_movies.html', context)
+
+
+def registration(request):
+    form = RegistrationForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+
+    return render(request, 'client/reg.html', {'form': form})
+
+
+def user_login(request):
+    form = LoginForm(data=request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')
+
+    return render(request, 'client/login.html', {'form': form})
+
+
+def log_out(request):
+    logout(request)
+    return redirect('home')
+
+
+
 
 
 

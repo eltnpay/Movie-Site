@@ -34,15 +34,14 @@
                     </div>
                 </div>
 
-                <div class="section">
-                    <h2 class="section-title"><i class="fas fa-tags"></i> Жанры</h2>
-                    <div class="section-content">
-                        {% for g in movie.genres.all %}
-                            <span class="tag">{{ g.genre }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-
+  <div class="section">
+    <h2 class="section-title"><i class="fas fa-tags"></i> Жанры</h2>
+    <div class="section-content">
+        {% for g in movie.genres.all %}
+            <a href="{% url 'movies_by_genre' slug=g.slug %}" class="tag">{{ g.genre }}</a>
+        {% endfor %}
+    </div>
+</div>
                 <div class="section">
                     <h2 class="section-title"><i class="fas fa-star"></i> Актёры</h2>
                     <div class="section-content actors-grid">
@@ -63,6 +62,264 @@
                     <i class="fab fa-youtube"></i> Смотреть трейлер
                 </a>
             </div>
+
+<style>
+    /* Секция комментариев */
+    .comments-section {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .comments-section h2 {
+        color: #ff0000;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    .comments-section h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #ff0000, #8b0000);
+    }
+
+    /* Список комментариев */
+    .comments-list {
+        margin-bottom: 50px;
+    }
+
+    /* Блок комментария */
+    .comment-box {
+        background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+        border: 2px solid #2a2a2a;
+        border-left: 5px solid #ff0000;
+        padding: 25px 30px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .comment-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), transparent);
+        pointer-events: none;
+    }
+
+    .comment-box:hover {
+        transform: translateY(-5px);
+        border-left-color: #ff3333;
+        box-shadow: 0 12px 30px rgba(255, 0, 0, 0.3);
+    }
+
+    .comment-box strong {
+        color: #ff0000;
+        font-size: 18px;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .comment-box .comment-text {
+        color: #e0e0e0;
+        font-size: 16px;
+        line-height: 1.7;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Сообщение об отсутствии комментариев */
+    .no-comments {
+        background: #1a1a1a;
+        border: 2px dashed #ff0000;
+        color: #999;
+        font-style: italic;
+        padding: 40px;
+        text-align: center;
+        border-radius: 10px;
+        font-size: 18px;
+    }
+
+    /* Форма комментариев */
+    .comment-form-wrapper {
+        background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+        padding: 40px;
+        border: 2px solid #2a2a2a;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        margin-top: 40px;
+    }
+
+    .comment-form-wrapper h2 {
+        margin-top: 0;
+    }
+
+    .comment-form p {
+        margin-bottom: 25px;
+    }
+
+    .comment-form label {
+        display: block;
+        color: #ff0000;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .comment-form input[type="text"],
+    .comment-form textarea {
+        width: 100%;
+        padding: 15px 20px;
+        background: #0d0d0d;
+        border: 2px solid #2a2a2a;
+        border-radius: 8px;
+        color: #e0e0e0;
+        font-size: 16px;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .comment-form input[type="text"]:focus,
+    .comment-form textarea:focus {
+        outline: none;
+        border-color: #ff0000;
+        background: #1a1a1a;
+        box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.1);
+    }
+
+    .comment-form textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* Кнопка отправки */
+    .comment-form button[type="submit"] {
+        background: linear-gradient(135deg, #ff0000, #8b0000);
+        color: #fff;
+        padding: 16px 50px;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.3);
+        margin-top: 10px;
+    }
+
+    .comment-form button[type="submit"]:hover {
+        background: linear-gradient(135deg, #ff3333, #a00000);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+    }
+
+    .comment-form button[type="submit"]:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+    }
+
+    /* Призыв к входу */
+    .login-prompt {
+        background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+        border: 2px solid #ff0000;
+        color: #e0e0e0;
+        padding: 30px;
+        text-align: center;
+        border-radius: 10px;
+        margin-top: 40px;
+        font-size: 18px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .login-prompt a {
+        color: #ff0000;
+        text-decoration: none;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        border-bottom: 2px solid transparent;
+    }
+
+    .login-prompt a:hover {
+        color: #ff3333;
+        border-bottom-color: #ff3333;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .comments-section h2 {
+            font-size: 24px;
+        }
+        
+        .comment-box {
+            padding: 20px;
+        }
+        
+        .comment-form-wrapper {
+            padding: 25px;
+        }
+        
+        .comment-form button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+        }
+    }
+</style>
+
+<div class="comments-section">
+    <h2>Комментарии</h2>
+    
+    <div class="comments-list">
+        {% for c in comments %}
+        <div class="comment-box">
+            <strong>{{ c.user.username }}</strong>
+            <div class="comment-text">{{ c.text }}</div>
+        </div>
+        {% empty %}
+        <p class="no-comments">Комментариев пока нет...</p>
+        {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="comment-form-wrapper">
+            <h2>Оставить комментарий</h2>
+            <form method="POST" class="comment-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Отправить</button>
+            </form>
+        </div>
+    {% else %}
+        <p class="login-prompt">
+            Чтобы оставить комментарий, <a href="{% url 'login' %}">войдите</a>
+        </p>
+    {% endif %}
+</div>
+
 
             <div class="video-player">
                 <video controls poster="{{ movie.image.url }}" preload="metadata">
